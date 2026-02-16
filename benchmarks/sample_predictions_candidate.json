@@ -1,0 +1,21 @@
+{
+  "affinity_mae": {
+    "kras_mrtx1133": {
+      "affinity": -9.15
+    },
+    "egfr_osimertinib": {
+      "affinity": -8.5
+    }
+  },
+  "admet_toxicity_accuracy": {
+    "case_1": {
+      "toxic": 0
+    },
+    "case_2": {
+      "toxic": 1
+    },
+    "case_3": {
+      "toxic": 1
+    }
+  }
+}

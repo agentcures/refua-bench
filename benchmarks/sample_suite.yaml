@@ -1,0 +1,45 @@
+name: refua-core-smoke
+version: 1.0.0
+description: Sample benchmark suite for affinity and ADMET smoke checks.
+metadata:
+  owner: refua
+  purpose: quick-regression
+tasks:
+  - id: affinity_mae
+    metric: mae
+    prediction_key: affinity
+    regression_tolerance: 0.05
+    weight: 2.0
+    cases:
+      - id: kras_mrtx1133
+        input:
+          target: KRAS
+          ligand: MRTX1133
+        expected:
+          affinity: -9.3
+      - id: egfr_osimertinib
+        input:
+          target: EGFR
+          ligand: Osimertinib
+        expected:
+          affinity: -8.7
+  - id: admet_toxicity_accuracy
+    metric: accuracy
+    prediction_key: toxic
+    regression_tolerance: 0.02
+    cases:
+      - id: case_1
+        input:
+          smiles: CCO
+        expected:
+          toxic: 0
+      - id: case_2
+        input:
+          smiles: CC(=O)O
+        expected:
+          toxic: 0
+      - id: case_3
+        input:
+          smiles: N#CCN
+        expected:
+          toxic: 1
