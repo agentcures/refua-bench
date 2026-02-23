@@ -8,7 +8,16 @@ from typing import Any
 
 import yaml
 
-SUPPORTED_METRICS = {"mae", "rmse", "accuracy", "exact_match", "f1", "enrichment_factor", "ef"}
+SUPPORTED_METRICS = {
+    "mae",
+    "rmse",
+    "accuracy",
+    "exact_match",
+    "f1",
+    "enrichment_factor",
+    "ef",
+    "bedroc",
+}
 
 
 @dataclass(slots=True)
@@ -29,6 +38,7 @@ class BenchmarkTask:
     weight: float = 1.0
     positive_label: Any = 1
     enrichment_fraction: float = 0.01
+    bedroc_alpha: float = 20.0
     cases: list[BenchmarkCase] = field(default_factory=list)
 
 
@@ -115,6 +125,11 @@ def _parse_task(item: Any) -> BenchmarkTask:
             f"task '{task_id}' enrichment_fraction must be > 0 and <= 1 "
             f"(received {enrichment_fraction})"
         )
+    bedroc_alpha = _float(item.get("bedroc_alpha", 20.0), "bedroc_alpha")
+    if bedroc_alpha <= 0:
+        raise ValueError(
+            f"task '{task_id}' bedroc_alpha must be > 0 (received {bedroc_alpha})"
+        )
 
     cases_raw = item.get("cases")
     if not isinstance(cases_raw, list) or not cases_raw:
@@ -138,6 +153,7 @@ def _parse_task(item: Any) -> BenchmarkTask:
         weight=weight,
         positive_label=positive_label,
         enrichment_fraction=enrichment_fraction,
+        bedroc_alpha=bedroc_alpha,
         cases=cases,
     )
 

@@ -136,6 +136,7 @@ def _run_task(task: BenchmarkTask, adapter: ModelAdapter) -> TaskResult:
             predicted_values,
             positive_label=task.positive_label,
             enrichment_fraction=task.enrichment_fraction,
+            bedroc_alpha=task.bedroc_alpha,
         )
 
     return TaskResult(

@@ -86,6 +86,53 @@ def test_compare_detects_enrichment_factor_regression(tmp_path) -> None:  # type
     assert task["status"] == "regression"
 
 
+def test_compare_detects_bedroc_regression(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    suite = suite_from_mapping(
+        {
+            "name": "bedroc-compare",
+            "version": "1.0.0",
+            "tasks": [
+                {
+                    "id": "bedroc_task",
+                    "metric": "bedroc",
+                    "prediction_key": "score",
+                    "expected_key": "active",
+                    "positive_label": 1,
+                    "bedroc_alpha": 20.0,
+                    "regression_tolerance": 0.0,
+                    "cases": [
+                        {"id": "a", "input": {}, "expected": {"active": 1, "score": 0.99}},
+                        {"id": "b", "input": {}, "expected": {"active": 1, "score": 0.98}},
+                        {"id": "c", "input": {}, "expected": {"active": 0, "score": 0.4}},
+                        {"id": "d", "input": {}, "expected": {"active": 0, "score": 0.3}},
+                        {"id": "e", "input": {}, "expected": {"active": 0, "score": 0.2}},
+                    ],
+                }
+            ],
+        }
+    )
+    predictions = {
+        "bedroc_task": {
+            "a": {"score": 0.10},
+            "b": {"score": 0.05},
+            "c": {"score": 0.99},
+            "d": {"score": 0.98},
+            "e": {"score": 0.97},
+        }
+    }
+    pred_path = tmp_path / "candidate.json"
+    pred_path.write_text(json.dumps(predictions), encoding="utf-8")
+
+    baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
+    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+
+    report = compare_runs(suite, baseline, candidate).to_dict()
+    task = report["task_comparisons"][0]
+    assert report["summary"]["regressions"] == 1
+    assert task["direction"] == "higher"
+    assert task["status"] == "regression"
+
+
 def test_compare_min_effect_size_avoids_noise(tmp_path) -> None:  # type: ignore[no-untyped-def]
     suite = suite_from_mapping(
         {

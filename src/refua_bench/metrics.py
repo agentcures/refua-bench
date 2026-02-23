@@ -14,6 +14,7 @@ _METRIC_DIRECTIONS: dict[str, MetricDirection] = {
     "f1": "higher",
     "enrichment_factor": "higher",
     "ef": "higher",
+    "bedroc": "higher",
 }
 
 
@@ -31,6 +32,7 @@ def compute_metric(
     *,
     positive_label: Any = 1,
     enrichment_fraction: float = 0.01,
+    bedroc_alpha: float = 20.0,
 ) -> float:
     if len(expected_values) != len(predicted_values):
         raise ValueError("expected_values and predicted_values must have equal length")
@@ -72,6 +74,13 @@ def compute_metric(
             predicted_values,
             positive_label=positive_label,
             enrichment_fraction=enrichment_fraction,
+        )
+    if metric == "bedroc":
+        return _bedroc(
+            expected_values,
+            predicted_values,
+            positive_label=positive_label,
+            alpha=bedroc_alpha,
         )
 
     raise ValueError(f"Unsupported metric: {metric}")
@@ -147,3 +156,63 @@ def _enrichment_factor(
     baseline_positive_rate = total_positives / n_cases
     top_positive_rate = top_hits / top_k
     return top_positive_rate / baseline_positive_rate
+
+
+def _bedroc(
+    expected: Sequence[Any],
+    predicted: Sequence[Any],
+    *,
+    positive_label: Any,
+    alpha: float,
+) -> float:
+    try:
+        alpha_value = float(alpha)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("bedroc_alpha must be numeric") from exc
+    if not math.isfinite(alpha_value) or alpha_value <= 0:
+        raise ValueError("bedroc_alpha must be > 0")
+
+    n_cases = len(expected)
+    scores = _to_float_list(predicted)
+    ranked = sorted(
+        zip(scores, expected, strict=True),
+        key=lambda item: item[0],
+        reverse=True,
+    )
+
+    num_actives = 0
+    sum_exp = 0.0
+    for index, (_, label) in enumerate(ranked, start=1):
+        if label == positive_label:
+            num_actives += 1
+            try:
+                sum_exp += math.exp(-(alpha_value * index) / n_cases)
+            except OverflowError as exc:
+                raise ValueError("bedroc_alpha is too large for stable computation") from exc
+
+    if num_actives == 0:
+        raise ValueError("bedroc requires at least one positive expected label")
+    if num_actives == n_cases:
+        return 1.0
+
+    try:
+        # Matches RDKit's BEDROC implementation (Truchon & Bayly, 2007):
+        # denom = (1/N) * ((1 - exp(-alpha)) / (exp(alpha/N) - 1))
+        denom = (1.0 / n_cases) * (
+            (-math.expm1(-alpha_value)) / math.expm1(alpha_value / n_cases)
+        )
+        rie = sum_exp / (num_actives * denom)
+        ratio = num_actives / n_cases
+        rie_max = (-math.expm1(-alpha_value * ratio)) / (ratio * (-math.expm1(-alpha_value)))
+        rie_min = (-math.expm1(alpha_value * ratio)) / (ratio * (-math.expm1(alpha_value)))
+    except OverflowError as exc:
+        raise ValueError("bedroc_alpha is too large for stable computation") from exc
+
+    scale = rie_max - rie_min
+    if scale == 0:
+        return 1.0
+
+    score = (rie - rie_min) / scale
+    if not math.isfinite(score):
+        raise ValueError("bedroc produced a non-finite score")
+    return max(0.0, min(1.0, score))

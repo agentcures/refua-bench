@@ -13,6 +13,7 @@ def test_suite_defaults(suite_payload: dict[str, object]) -> None:
     assert len(suite.tasks) == 2
     assert suite.tasks[0].expected_key == "affinity"
     assert suite.tasks[0].enrichment_fraction == pytest.approx(0.01)
+    assert suite.tasks[0].bedroc_alpha == pytest.approx(20.0)
 
 
 def test_invalid_metric_raises(suite_payload: dict[str, object]) -> None:
@@ -47,4 +48,15 @@ def test_invalid_enrichment_fraction_raises(suite_payload: dict[str, object]) ->
     payload["tasks"] = tasks
 
     with pytest.raises(ValueError, match="enrichment_fraction"):
+        suite_from_mapping(payload)
+
+
+def test_invalid_bedroc_alpha_raises(suite_payload: dict[str, object]) -> None:
+    payload = dict(suite_payload)
+    tasks = list(cast(list[dict[str, Any]], payload["tasks"]))
+    tasks[0] = dict(tasks[0])
+    tasks[0]["bedroc_alpha"] = 0.0
+    payload["tasks"] = tasks
+
+    with pytest.raises(ValueError, match="bedroc_alpha"):
         suite_from_mapping(payload)
