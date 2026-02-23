@@ -160,7 +160,8 @@ tasks:
     expected_key: affinity  # optional, defaults to prediction_key
     regression_tolerance: 0.05
     weight: 2.0
-    positive_label: 1       # used by f1
+    positive_label: 1       # used by f1/enrichment_factor
+    enrichment_fraction: 0.01  # used by enrichment_factor/ef
     cases:
       - id: case_1
         input: {target: KRAS, ligand: MRTX1133}
@@ -174,6 +175,7 @@ Supported metrics:
 - `accuracy`
 - `exact_match`
 - `f1` (binary)
+- `enrichment_factor` / `ef` (binary labels + ranking scores)
 
 ## Prediction File Format (`file` adapter)
 

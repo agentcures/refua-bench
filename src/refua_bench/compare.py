@@ -169,6 +169,7 @@ def compare_runs(
                 metric=task.metric,
                 direction=direction,
                 positive_label=task.positive_label,
+                enrichment_fraction=task.enrichment_fraction,
                 pairs=paired_cases_data,
                 threshold=threshold,
                 resamples=active_policy.bootstrap_resamples,
@@ -337,6 +338,7 @@ def _bootstrap_regression_stats(
     metric: str,
     direction: str,
     positive_label: Any,
+    enrichment_fraction: float,
     pairs: list[tuple[Any, Any, Any, Any]],
     threshold: float,
     resamples: int,
@@ -371,12 +373,14 @@ def _bootstrap_regression_stats(
                 b_expected,
                 b_predicted,
                 positive_label=positive_label,
+                enrichment_fraction=enrichment_fraction,
             )
             candidate_score = compute_metric(
                 metric,
                 c_expected,
                 c_predicted,
                 positive_label=positive_label,
+                enrichment_fraction=enrichment_fraction,
             )
         except ValueError:
             return None

@@ -12,6 +12,8 @@ _METRIC_DIRECTIONS: dict[str, MetricDirection] = {
     "accuracy": "higher",
     "exact_match": "higher",
     "f1": "higher",
+    "enrichment_factor": "higher",
+    "ef": "higher",
 }
 
 
@@ -28,6 +30,7 @@ def compute_metric(
     predicted_values: Sequence[Any],
     *,
     positive_label: Any = 1,
+    enrichment_fraction: float = 0.01,
 ) -> float:
     if len(expected_values) != len(predicted_values):
         raise ValueError("expected_values and predicted_values must have equal length")
@@ -63,6 +66,13 @@ def compute_metric(
 
     if metric == "f1":
         return _f1_binary(expected_values, predicted_values, positive_label=positive_label)
+    if metric in {"enrichment_factor", "ef"}:
+        return _enrichment_factor(
+            expected_values,
+            predicted_values,
+            positive_label=positive_label,
+            enrichment_fraction=enrichment_fraction,
+        )
 
     raise ValueError(f"Unsupported metric: {metric}")
 
@@ -104,3 +114,36 @@ def _f1_binary(expected: Sequence[Any], predicted: Sequence[Any], *, positive_la
     if precision + recall == 0:
         return 0.0
     return 2 * precision * recall / (precision + recall)
+
+
+def _enrichment_factor(
+    expected: Sequence[Any],
+    predicted: Sequence[Any],
+    *,
+    positive_label: Any,
+    enrichment_fraction: float,
+) -> float:
+    try:
+        fraction = float(enrichment_fraction)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("enrichment_fraction must be numeric") from exc
+    if not math.isfinite(fraction) or fraction <= 0 or fraction > 1:
+        raise ValueError("enrichment_fraction must be > 0 and <= 1")
+
+    n_cases = len(expected)
+    top_k = max(1, math.ceil(n_cases * fraction))
+    scores = _to_float_list(predicted)
+
+    ranked = sorted(
+        zip(scores, expected, strict=True),
+        key=lambda item: item[0],
+        reverse=True,
+    )
+    total_positives = sum(1 for value in expected if value == positive_label)
+    if total_positives == 0:
+        raise ValueError("enrichment_factor requires at least one positive expected label")
+
+    top_hits = sum(1 for _, label in ranked[:top_k] if label == positive_label)
+    baseline_positive_rate = total_positives / n_cases
+    top_positive_rate = top_hits / top_k
+    return top_positive_rate / baseline_positive_rate

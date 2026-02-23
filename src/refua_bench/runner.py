@@ -135,6 +135,7 @@ def _run_task(task: BenchmarkTask, adapter: ModelAdapter) -> TaskResult:
             expected_values,
             predicted_values,
             positive_label=task.positive_label,
+            enrichment_fraction=task.enrichment_fraction,
         )
 
     return TaskResult(
