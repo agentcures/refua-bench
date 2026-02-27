@@ -4,7 +4,9 @@ from importlib.metadata import version as _distribution_version
 from pathlib import Path
 import tomllib
 
-__all__ = ["__version__"]
+from refua_bench.gating import gate_suite
+
+__all__ = ["__version__", "gate_suite"]
 
 
 def _read_version_from_pyproject() -> str | None:
