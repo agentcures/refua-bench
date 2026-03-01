@@ -29,7 +29,12 @@ from refua_bench.reporting import (
 )
 from refua_bench.run_artifact import validate_run_artifact
 from refua_bench.runner import run_benchmark
-from refua_bench.schema import BenchmarkSuite, load_data_file, load_suite, suite_from_mapping
+from refua_bench.schema import (
+    BenchmarkSuite,
+    load_data_file,
+    load_suite,
+    suite_from_mapping,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -39,11 +44,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    run_parser = subparsers.add_parser("run", help="Run a benchmark suite and emit run artifacts")
+    run_parser = subparsers.add_parser(
+        "run", help="Run a benchmark suite and emit run artifacts"
+    )
     _add_common_run_arguments(run_parser)
     _add_provenance_arguments(run_parser)
-    run_parser.add_argument("--output", type=Path, required=True, help="JSON run artifact path")
-    run_parser.add_argument("--markdown", type=Path, help="Optional markdown run report path")
+    run_parser.add_argument(
+        "--output", type=Path, required=True, help="JSON run artifact path"
+    )
+    run_parser.add_argument(
+        "--markdown", type=Path, help="Optional markdown run report path"
+    )
     run_parser.add_argument(
         "--fail-on-errors",
         action="store_true",
@@ -55,7 +66,9 @@ def build_parser() -> argparse.ArgumentParser:
         "compare",
         help="Compare candidate run artifact against baseline",
     )
-    compare_parser.add_argument("--suite", type=Path, required=True, help="Benchmark suite config")
+    compare_parser.add_argument(
+        "--suite", type=Path, required=True, help="Benchmark suite config"
+    )
     compare_parser.add_argument(
         "--baseline",
         type=Path,
@@ -76,8 +89,12 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Candidate run artifact",
     )
-    compare_parser.add_argument("--output", type=Path, required=True, help="Comparison JSON report")
-    compare_parser.add_argument("--markdown", type=Path, help="Optional markdown comparison report")
+    compare_parser.add_argument(
+        "--output", type=Path, required=True, help="Comparison JSON report"
+    )
+    compare_parser.add_argument(
+        "--markdown", type=Path, help="Optional markdown comparison report"
+    )
     _add_statistical_arguments(compare_parser)
     compare_parser.add_argument(
         "--no-fail-on-regression",
@@ -117,8 +134,12 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Path to write candidate run artifact",
     )
-    gate_parser.add_argument("--output", type=Path, required=True, help="Comparison JSON report")
-    gate_parser.add_argument("--markdown", type=Path, help="Optional markdown comparison report")
+    gate_parser.add_argument(
+        "--output", type=Path, required=True, help="Comparison JSON report"
+    )
+    gate_parser.add_argument(
+        "--markdown", type=Path, help="Optional markdown comparison report"
+    )
     _add_statistical_arguments(gate_parser)
     gate_parser.add_argument(
         "--no-fail-on-regression",
@@ -136,7 +157,9 @@ def build_parser() -> argparse.ArgumentParser:
         "init",
         help="Generate a starter benchmark suite and baseline artifact",
     )
-    init_parser.add_argument("--directory", type=Path, required=True, help="Output directory")
+    init_parser.add_argument(
+        "--directory", type=Path, required=True, help="Output directory"
+    )
     init_parser.add_argument("--name", default="my-refua-suite", help="Suite name")
     init_parser.add_argument(
         "--force",
@@ -158,9 +181,13 @@ def build_parser() -> argparse.ArgumentParser:
         "list",
         help="List baselines in a registry",
     )
-    baseline_list_parser.add_argument("--registry", type=Path, required=True, help="Registry JSON")
+    baseline_list_parser.add_argument(
+        "--registry", type=Path, required=True, help="Registry JSON"
+    )
     baseline_list_parser.add_argument("--suite-name", help="Optional suite name filter")
-    baseline_list_parser.add_argument("--output", type=Path, help="Optional JSON output path")
+    baseline_list_parser.add_argument(
+        "--output", type=Path, help="Optional JSON output path"
+    )
     baseline_list_parser.set_defaults(handler=_cmd_baseline_list)
 
     baseline_resolve_parser = baseline_subparsers.add_parser(
@@ -252,7 +279,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _add_common_run_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--suite", type=Path, required=True, help="Benchmark suite config")
+    parser.add_argument(
+        "--suite", type=Path, required=True, help="Benchmark suite config"
+    )
     parser.add_argument(
         "--adapter",
         required=True,
@@ -375,7 +404,9 @@ def _cmd_gate(args: argparse.Namespace) -> int:
     )
 
     policy = _policy_from_args(args)
-    comparison = compare_runs(suite, baseline, validated_candidate, policy=policy).to_dict()
+    comparison = compare_runs(
+        suite, baseline, validated_candidate, policy=policy
+    ).to_dict()
     write_json(args.output, comparison)
 
     if args.markdown is not None:
@@ -414,7 +445,9 @@ def _cmd_init(args: argparse.Namespace) -> int:
         )
 
     suite_payload = _starter_suite_payload(args.name)
-    suite_path.write_text(yaml.safe_dump(suite_payload, sort_keys=False), encoding="utf-8")
+    suite_path.write_text(
+        yaml.safe_dump(suite_payload, sort_keys=False), encoding="utf-8"
+    )
 
     suite = suite_from_mapping(suite_payload)
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
@@ -521,7 +554,9 @@ def _cmd_baseline_promote(args: argparse.Namespace) -> int:
         candidate_path=args.candidate,
         notes=args.notes,
         provenance=_mapping_or_none(candidate_run.get("provenance")),
-        compare_summary=None if compare_payload is None else compare_payload.get("summary"),
+        compare_summary=(
+            None if compare_payload is None else compare_payload.get("summary")
+        ),
         store_dir=args.store_dir,
     )
     save_registry(args.registry, registry)
@@ -539,7 +574,9 @@ def _cmd_baseline_promote(args: argparse.Namespace) -> int:
     return 0
 
 
-def _comparison_failed(compare_payload: dict[str, Any], fail_on_uncertain: bool) -> bool:
+def _comparison_failed(
+    compare_payload: dict[str, Any], fail_on_uncertain: bool
+) -> bool:
     summary = compare_payload.get("summary", {})
     regressions = int(summary.get("regressions", 0)) if isinstance(summary, dict) else 0
     uncertain = int(summary.get("uncertain", 0)) if isinstance(summary, dict) else 0
@@ -563,9 +600,7 @@ def _resolve_baseline_arg(args: argparse.Namespace, suite: BenchmarkSuite) -> Pa
             baseline_name=args.baseline_name,
         )
 
-    raise ValueError(
-        "Provide --baseline, or provide --registry with --baseline-name"
-    )
+    raise ValueError("Provide --baseline, or provide --registry with --baseline-name")
 
 
 def _policy_from_args(args: argparse.Namespace) -> StatisticalPolicy:

@@ -32,7 +32,9 @@ def test_compare_detects_regression(suite, tmp_path) -> None:  # type: ignore[no
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(suite, baseline, candidate).to_dict()
     assert report["summary"]["passed"] is False
@@ -54,11 +56,31 @@ def test_compare_detects_enrichment_factor_regression(tmp_path) -> None:  # type
                     "enrichment_fraction": 0.2,
                     "regression_tolerance": 0.0,
                     "cases": [
-                        {"id": "a", "input": {}, "expected": {"active": 1, "score": 1.0}},
-                        {"id": "b", "input": {}, "expected": {"active": 1, "score": 1.0}},
-                        {"id": "c", "input": {}, "expected": {"active": 0, "score": 0.0}},
-                        {"id": "d", "input": {}, "expected": {"active": 0, "score": 0.0}},
-                        {"id": "e", "input": {}, "expected": {"active": 0, "score": 0.0}},
+                        {
+                            "id": "a",
+                            "input": {},
+                            "expected": {"active": 1, "score": 1.0},
+                        },
+                        {
+                            "id": "b",
+                            "input": {},
+                            "expected": {"active": 1, "score": 1.0},
+                        },
+                        {
+                            "id": "c",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.0},
+                        },
+                        {
+                            "id": "d",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.0},
+                        },
+                        {
+                            "id": "e",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.0},
+                        },
                     ],
                 }
             ],
@@ -77,7 +99,9 @@ def test_compare_detects_enrichment_factor_regression(tmp_path) -> None:  # type
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(suite, baseline, candidate).to_dict()
     task = report["task_comparisons"][0]
@@ -101,11 +125,31 @@ def test_compare_detects_bedroc_regression(tmp_path) -> None:  # type: ignore[no
                     "bedroc_alpha": 20.0,
                     "regression_tolerance": 0.0,
                     "cases": [
-                        {"id": "a", "input": {}, "expected": {"active": 1, "score": 0.99}},
-                        {"id": "b", "input": {}, "expected": {"active": 1, "score": 0.98}},
-                        {"id": "c", "input": {}, "expected": {"active": 0, "score": 0.4}},
-                        {"id": "d", "input": {}, "expected": {"active": 0, "score": 0.3}},
-                        {"id": "e", "input": {}, "expected": {"active": 0, "score": 0.2}},
+                        {
+                            "id": "a",
+                            "input": {},
+                            "expected": {"active": 1, "score": 0.99},
+                        },
+                        {
+                            "id": "b",
+                            "input": {},
+                            "expected": {"active": 1, "score": 0.98},
+                        },
+                        {
+                            "id": "c",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.4},
+                        },
+                        {
+                            "id": "d",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.3},
+                        },
+                        {
+                            "id": "e",
+                            "input": {},
+                            "expected": {"active": 0, "score": 0.2},
+                        },
                     ],
                 }
             ],
@@ -124,7 +168,9 @@ def test_compare_detects_bedroc_regression(tmp_path) -> None:  # type: ignore[no
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(suite, baseline, candidate).to_dict()
     task = report["task_comparisons"][0]
@@ -166,7 +212,9 @@ def test_compare_min_effect_size_avoids_noise(tmp_path) -> None:  # type: ignore
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(
         suite,
@@ -206,7 +254,9 @@ def test_compare_bootstrap_confirms_regression(tmp_path) -> None:  # type: ignor
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(
         suite,
@@ -255,7 +305,9 @@ def test_compare_bootstrap_can_be_uncertain(tmp_path) -> None:  # type: ignore[n
     pred_path.write_text(json.dumps(predictions), encoding="utf-8")
 
     baseline = run_benchmark(suite, GoldenAdapter()).to_dict()
-    candidate = run_benchmark(suite, FileAdapter({"predictions_path": str(pred_path)})).to_dict()
+    candidate = run_benchmark(
+        suite, FileAdapter({"predictions_path": str(pred_path)})
+    ).to_dict()
 
     report = compare_runs(
         suite,

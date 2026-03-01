@@ -294,7 +294,10 @@ def _paired_cases(
         if candidate_case is None:
             continue
 
-        if baseline_case.get("error") is not None or candidate_case.get("error") is not None:
+        if (
+            baseline_case.get("error") is not None
+            or candidate_case.get("error") is not None
+        ):
             continue
 
         baseline_expected = baseline_case.get("expected")

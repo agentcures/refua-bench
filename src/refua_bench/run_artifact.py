@@ -57,7 +57,9 @@ def validate_run_artifact(
 
     _require_non_empty_str(run.get("run_id"), f"{source}.run_id")
     suite_name = _require_non_empty_str(run.get("suite_name"), f"{source}.suite_name")
-    suite_version = _require_non_empty_str(run.get("suite_version"), f"{source}.suite_version")
+    suite_version = _require_non_empty_str(
+        run.get("suite_version"), f"{source}.suite_version"
+    )
     _require_non_empty_str(run.get("adapter"), f"{source}.adapter")
     _require_non_empty_str(run.get("started_at"), f"{source}.started_at")
     _require_non_empty_str(run.get("finished_at"), f"{source}.finished_at")
@@ -107,12 +109,16 @@ def validate_run_artifact(
         task_map[task_id] = task
 
         _require_non_empty_str(task.get("metric"), f"{task_path}.metric")
-        direction = _require_non_empty_str(task.get("direction"), f"{task_path}.direction")
+        direction = _require_non_empty_str(
+            task.get("direction"), f"{task_path}.direction"
+        )
         if direction not in {"higher", "lower"}:
             raise ValueError(f"{task_path}.direction must be 'higher' or 'lower'")
 
         _require_optional_finite_number(task.get("score"), f"{task_path}.score")
-        cases_total = _require_non_negative_int(task.get("cases_total"), f"{task_path}.cases_total")
+        cases_total = _require_non_negative_int(
+            task.get("cases_total"), f"{task_path}.cases_total"
+        )
         case_failures = _require_non_negative_int(
             task.get("case_failures"),
             f"{task_path}.case_failures",
@@ -120,7 +126,9 @@ def validate_run_artifact(
         if case_failures > cases_total:
             raise ValueError(f"{task_path}.case_failures cannot exceed cases_total")
 
-        case_results_raw = _require_list(task.get("case_results"), f"{task_path}.case_results")
+        case_results_raw = _require_list(
+            task.get("case_results"), f"{task_path}.case_results"
+        )
         if len(case_results_raw) != cases_total:
             raise ValueError(
                 f"{task_path}.cases_total={cases_total} does not match "
@@ -134,12 +142,16 @@ def validate_run_artifact(
             case = _require_mapping(case_item, case_path)
             _validate_key_set(case, required=_CASE_KEYS, path=case_path)
 
-            case_id = _require_non_empty_str(case.get("case_id"), f"{case_path}.case_id")
+            case_id = _require_non_empty_str(
+                case.get("case_id"), f"{case_path}.case_id"
+            )
             if case_id in case_ids:
                 raise ValueError(f"Duplicate case_id in {task_path}: '{case_id}'")
             case_ids.add(case_id)
 
-            _require_non_negative_finite_number(case.get("duration_ms"), f"{case_path}.duration_ms")
+            _require_non_negative_finite_number(
+                case.get("duration_ms"), f"{case_path}.duration_ms"
+            )
 
             error = case.get("error")
             if error is None:

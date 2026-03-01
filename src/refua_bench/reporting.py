@@ -15,7 +15,9 @@ def read_json(path: str | Path) -> dict[str, Any]:
 def write_json(path: str | Path, payload: dict[str, Any]) -> None:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def write_markdown(path: str | Path, text: str) -> None:

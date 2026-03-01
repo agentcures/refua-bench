@@ -85,7 +85,9 @@ def resolve_baseline_path(
     suite_name: str,
     baseline_name: str,
 ) -> Path:
-    entry = get_baseline_entry(registry, suite_name=suite_name, baseline_name=baseline_name)
+    entry = get_baseline_entry(
+        registry, suite_name=suite_name, baseline_name=baseline_name
+    )
     if entry is None:
         raise KeyError(f"No baseline named '{baseline_name}' for suite '{suite_name}'")
 
@@ -144,7 +146,12 @@ def promote_baseline(
     registry_file = Path(registry_path)
 
     if store_dir is None:
-        target_dir = registry_file.parent / "baselines" / _slug(suite_name) / _slug(baseline_name)
+        target_dir = (
+            registry_file.parent
+            / "baselines"
+            / _slug(suite_name)
+            / _slug(baseline_name)
+        )
     else:
         target_dir = Path(store_dir) / _slug(suite_name) / _slug(baseline_name)
 

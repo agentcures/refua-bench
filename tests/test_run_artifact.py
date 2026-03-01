@@ -18,7 +18,9 @@ def test_validate_run_artifact_accepts_runner_output(suite: BenchmarkSuite) -> N
     assert validated["suite_name"] == suite.name
 
 
-def test_validate_run_artifact_rejects_missing_top_level_key(suite: BenchmarkSuite) -> None:
+def test_validate_run_artifact_rejects_missing_top_level_key(
+    suite: BenchmarkSuite,
+) -> None:
     run_payload = run_benchmark(suite, GoldenAdapter()).to_dict()
     run_payload.pop("summary")
 

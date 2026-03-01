@@ -32,7 +32,9 @@ class FileAdapter:
     def __init__(self, config: Mapping[str, Any]) -> None:
         predictions_path = config.get("predictions_path")
         if predictions_path is None:
-            raise ValueError("file adapter requires 'predictions_path' in adapter config")
+            raise ValueError(
+                "file adapter requires 'predictions_path' in adapter config"
+            )
 
         payload = load_data_file(Path(predictions_path))
         self._predictions = self._normalize_predictions(payload)
@@ -54,7 +56,9 @@ class FileAdapter:
         if task_data is None:
             raise KeyError(f"No predictions for task '{task.task_id}'")
         if case.case_id not in task_data:
-            raise KeyError(f"No prediction for case '{case.case_id}' in task '{task.task_id}'")
+            raise KeyError(
+                f"No prediction for case '{case.case_id}' in task '{task.task_id}'"
+            )
 
         case_prediction = task_data[case.case_id]
         if isinstance(case_prediction, Mapping):
@@ -67,10 +71,14 @@ class CommandAdapter:
 
     def __init__(self, config: Mapping[str, Any]) -> None:
         command = config.get("command")
-        if not isinstance(command, list) or not command or not all(
-            isinstance(item, str) for item in command
+        if (
+            not isinstance(command, list)
+            or not command
+            or not all(isinstance(item, str) for item in command)
         ):
-            raise ValueError("command adapter requires a non-empty string list at config.command")
+            raise ValueError(
+                "command adapter requires a non-empty string list at config.command"
+            )
         self._command = command
 
         env_raw = config.get("env", {})

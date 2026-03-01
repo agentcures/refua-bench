@@ -43,8 +43,7 @@ def compute_metric(
         expected = _to_float_list(expected_values)
         predicted = _to_float_list(predicted_values)
         absolute_errors = [
-            abs(exp - pred)
-            for exp, pred in zip(expected, predicted, strict=True)
+            abs(exp - pred) for exp, pred in zip(expected, predicted, strict=True)
         ]
         return sum(absolute_errors) / len(expected)
 
@@ -52,8 +51,7 @@ def compute_metric(
         expected = _to_float_list(expected_values)
         predicted = _to_float_list(predicted_values)
         squared_errors = [
-            (exp - pred) ** 2
-            for exp, pred in zip(expected, predicted, strict=True)
+            (exp - pred) ** 2 for exp, pred in zip(expected, predicted, strict=True)
         ]
         mse = sum(squared_errors) / len(expected)
         return math.sqrt(mse)
@@ -67,7 +65,9 @@ def compute_metric(
         return matches / len(expected_values)
 
     if metric == "f1":
-        return _f1_binary(expected_values, predicted_values, positive_label=positive_label)
+        return _f1_binary(
+            expected_values, predicted_values, positive_label=positive_label
+        )
     if metric in {"enrichment_factor", "ef"}:
         return _enrichment_factor(
             expected_values,
@@ -96,7 +96,9 @@ def _to_float_list(values: Sequence[Any]) -> list[float]:
     return result
 
 
-def _f1_binary(expected: Sequence[Any], predicted: Sequence[Any], *, positive_label: Any) -> float:
+def _f1_binary(
+    expected: Sequence[Any], predicted: Sequence[Any], *, positive_label: Any
+) -> float:
     true_positive = 0
     false_positive = 0
     false_negative = 0
@@ -150,7 +152,9 @@ def _enrichment_factor(
     )
     total_positives = sum(1 for value in expected if value == positive_label)
     if total_positives == 0:
-        raise ValueError("enrichment_factor requires at least one positive expected label")
+        raise ValueError(
+            "enrichment_factor requires at least one positive expected label"
+        )
 
     top_hits = sum(1 for _, label in ranked[:top_k] if label == positive_label)
     baseline_positive_rate = total_positives / n_cases
@@ -188,7 +192,9 @@ def _bedroc(
             try:
                 sum_exp += math.exp(-(alpha_value * index) / n_cases)
             except OverflowError as exc:
-                raise ValueError("bedroc_alpha is too large for stable computation") from exc
+                raise ValueError(
+                    "bedroc_alpha is too large for stable computation"
+                ) from exc
 
     if num_actives == 0:
         raise ValueError("bedroc requires at least one positive expected label")
@@ -203,8 +209,12 @@ def _bedroc(
         )
         rie = sum_exp / (num_actives * denom)
         ratio = num_actives / n_cases
-        rie_max = (-math.expm1(-alpha_value * ratio)) / (ratio * (-math.expm1(-alpha_value)))
-        rie_min = (-math.expm1(alpha_value * ratio)) / (ratio * (-math.expm1(alpha_value)))
+        rie_max = (-math.expm1(-alpha_value * ratio)) / (
+            ratio * (-math.expm1(-alpha_value))
+        )
+        rie_min = (-math.expm1(alpha_value * ratio)) / (
+            ratio * (-math.expm1(alpha_value))
+        )
     except OverflowError as exc:
         raise ValueError("bedroc_alpha is too large for stable computation") from exc
 

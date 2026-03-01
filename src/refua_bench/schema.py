@@ -67,7 +67,9 @@ def load_data_file(path: str | Path) -> dict[str, Any]:
 def dump_json(path: str | Path, payload: dict[str, Any]) -> None:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def load_suite(path: str | Path) -> BenchmarkSuite:
@@ -112,14 +114,20 @@ def _parse_task(item: Any) -> BenchmarkTask:
     metric = _required_str(item, "metric")
     if metric not in SUPPORTED_METRICS:
         allowed = ", ".join(sorted(SUPPORTED_METRICS))
-        raise ValueError(f"Unsupported metric '{metric}' for task '{task_id}'. Allowed: {allowed}")
+        raise ValueError(
+            f"Unsupported metric '{metric}' for task '{task_id}'. Allowed: {allowed}"
+        )
 
     prediction_key = _required_str(item, "prediction_key")
     expected_key = str(item.get("expected_key", prediction_key))
-    regression_tolerance = _float(item.get("regression_tolerance", 0.0), "regression_tolerance")
+    regression_tolerance = _float(
+        item.get("regression_tolerance", 0.0), "regression_tolerance"
+    )
     weight = _float(item.get("weight", 1.0), "weight")
     positive_label = item.get("positive_label", 1)
-    enrichment_fraction = _float(item.get("enrichment_fraction", 0.01), "enrichment_fraction")
+    enrichment_fraction = _float(
+        item.get("enrichment_fraction", 0.01), "enrichment_fraction"
+    )
     if enrichment_fraction <= 0 or enrichment_fraction > 1:
         raise ValueError(
             f"task '{task_id}' enrichment_fraction must be > 0 and <= 1 "
@@ -170,7 +178,9 @@ def _parse_case(item: Any, task_id: str) -> BenchmarkCase:
 
     expected = item.get("expected")
     if not isinstance(expected, Mapping):
-        raise ValueError(f"task '{task_id}' case '{case_id}' must include mapping expected")
+        raise ValueError(
+            f"task '{task_id}' case '{case_id}' must include mapping expected"
+        )
 
     tags_raw = item.get("tags", [])
     if not isinstance(tags_raw, list):
