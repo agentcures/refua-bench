@@ -1,8 +1,8 @@
 """refua-bench package."""
 
+import tomllib
 from importlib.metadata import version as _distribution_version
 from pathlib import Path
-import tomllib
 
 from refua_bench.gating import gate_suite
 
