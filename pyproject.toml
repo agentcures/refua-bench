@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "refua-bench"
-version = "0.6.0"
+version = "0.7.0"
 description = "Benchmark and regression gate tooling for Refua workflows."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
