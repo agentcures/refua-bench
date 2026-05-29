@@ -113,7 +113,7 @@ def _run_task(task: BenchmarkTask, adapter: ModelAdapter) -> TaskResult:
             predicted = output[task.prediction_key]
             expected_values.append(expected)
             predicted_values.append(predicted)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             error = str(exc)
             case_failures += 1
 
