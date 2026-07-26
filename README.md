@@ -20,25 +20,25 @@ It benchmarks current and future models via adapter interfaces and enforces safe
 
 ```bash
 cd refua-bench
-poetry install
+uv sync
 ```
 
 ## Build
 
 ```bash
-poetry build
+uv build
 ```
 
 ## CLI
 
 ```bash
-poetry run refua-bench --help
+uv run refua-bench --help
 ```
 
 ### 1. Run a benchmark
 
 ```bash
-poetry run refua-bench run \
+uv run refua-bench run \
   --suite benchmarks/sample_suite.yaml \
   --adapter file \
   --adapter-config benchmarks/sample_file_adapter_config.yaml \
@@ -53,7 +53,7 @@ By default, each run stores provenance in `run.provenance`.
 ### 2. Compare candidate vs baseline
 
 ```bash
-poetry run refua-bench compare \
+uv run refua-bench compare \
   --suite benchmarks/sample_suite.yaml \
   --baseline benchmarks/sample_baseline_run.json \
   --candidate artifacts/candidate_run.json \
@@ -64,7 +64,7 @@ poetry run refua-bench compare \
 ### 3. Statistical gating
 
 ```bash
-poetry run refua-bench compare \
+uv run refua-bench compare \
   --suite benchmarks/sample_suite.yaml \
   --baseline benchmarks/sample_baseline_run.json \
   --candidate artifacts/candidate_run.json \
@@ -85,7 +85,7 @@ Interpretation:
 ### 4. Run + compare in one command (`gate`)
 
 ```bash
-poetry run refua-bench gate \
+uv run refua-bench gate \
   --suite benchmarks/sample_suite.yaml \
   --baseline benchmarks/sample_baseline_run.json \
   --adapter file \
@@ -101,7 +101,7 @@ poetry run refua-bench gate \
 Promote an initial baseline:
 
 ```bash
-poetry run refua-bench baseline promote \
+uv run refua-bench baseline promote \
   --registry artifacts/baseline_registry.json \
   --suite benchmarks/sample_suite.yaml \
   --baseline-name stable \
@@ -111,7 +111,7 @@ poetry run refua-bench baseline promote \
 Compare against named baseline:
 
 ```bash
-poetry run refua-bench compare \
+uv run refua-bench compare \
   --suite benchmarks/sample_suite.yaml \
   --registry artifacts/baseline_registry.json \
   --baseline-name stable \
@@ -122,7 +122,7 @@ poetry run refua-bench compare \
 Promote a new candidate safely (fails if regression is detected):
 
 ```bash
-poetry run refua-bench baseline promote \
+uv run refua-bench baseline promote \
   --registry artifacts/baseline_registry.json \
   --suite benchmarks/sample_suite.yaml \
   --baseline-name stable \
@@ -134,8 +134,8 @@ poetry run refua-bench baseline promote \
 List/resolve baselines:
 
 ```bash
-poetry run refua-bench baseline list --registry artifacts/baseline_registry.json
-poetry run refua-bench baseline resolve \
+uv run refua-bench baseline list --registry artifacts/baseline_registry.json
+uv run refua-bench baseline resolve \
   --registry artifacts/baseline_registry.json \
   --suite benchmarks/sample_suite.yaml \
   --baseline-name stable
@@ -144,7 +144,7 @@ poetry run refua-bench baseline resolve \
 ### 6. Scaffold a new suite
 
 ```bash
-poetry run refua-bench init --directory benchmarks/new_suite --name refua-next
+uv run refua-bench init --directory benchmarks/new_suite --name refua-next
 ```
 
 ## Suite Schema
@@ -211,5 +211,5 @@ Output (stdout):
 ## Tests
 
 ```bash
-poetry run pytest
+uv run pytest
 ```

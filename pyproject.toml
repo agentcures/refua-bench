@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry-core>=1.9.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "refua-bench"
@@ -38,15 +38,18 @@ Documentation = "https://github.com/agentcures/refua#readme"
 [project.scripts]
 refua-bench = "refua_bench.cli:main"
 
-[tool.poetry]
-packages = [{ include = "refua_bench", from = "src" }]
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.6.0",
+    "mypy>=1.11.0",
+    "pre-commit>=4.5.1",
+    "types-pyyaml>=6.0.12.20250915",
+    "twine>=6.1",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = ">=8.0.0"
-ruff = ">=0.6.0"
-mypy = ">=1.11.0"
-pre-commit = ">=4.5.1"
-types-pyyaml = ">=6.0.12.20250915"
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
